@@ -118,6 +118,27 @@ Para parar: `docker compose down` (os dados continuam no volume `mongo-data`). P
 
 > **Porta ocupada?** Se 8080, 3001 ou 27017 já estiverem em uso na sua máquina, defina outras no `.env` (`FRONTEND_PORT`, `API_PORT`, `MONGO_PORT`).
 
+### Comandos úteis
+
+| Para... | Comando |
+| ------- | ------- |
+| Ver o estado dos contêineres (todos devem ficar `healthy`) | `docker compose ps` |
+| Acompanhar os logs da API | `docker compose logs -f backend` |
+| Recriar as imagens depois de alterar o código | `docker compose up -d --build` |
+| Abrir o shell do MongoDB | `docker compose exec mongo mongosh -u <MONGO_USER> -p <MONGO_PASSWORD> --authenticationDatabase admin sertaonews` |
+| Parar tudo | `docker compose down` |
+| Parar e apagar os dados do banco | `docker compose down -v` |
+
+Os três serviços têm *healthcheck*: o Mongo responde a `ping`, a API a `GET /api/health` e o nginx a `GET /healthz`. A API só sobe depois que o Mongo está saudável, e o front só depois da API.
+
+> **Docker Hub inacessível?** Se o build falhar com `TLS handshake timeout` ao baixar `node:22-slim` ou `nginx:1.27-alpine` (acontece em algumas redes), baixe as imagens base pelo espelho do Google e rode o build de novo:
+>
+> ```bash
+> docker pull mirror.gcr.io/library/node:22-slim && docker tag mirror.gcr.io/library/node:22-slim node:22-slim
+> docker pull mirror.gcr.io/library/nginx:1.27-alpine && docker tag mirror.gcr.io/library/nginx:1.27-alpine nginx:1.27-alpine
+> docker pull mirror.gcr.io/library/mongo:7 && docker tag mirror.gcr.io/library/mongo:7 mongo:7
+> ```
+
 ### Como os contêineres se comunicam
 
 ```
